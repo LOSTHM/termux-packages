@@ -6,11 +6,9 @@ from a6xx_gen4, the hardware very likely supports it.
 
 --- a/src/freedreno/common/freedreno_devices.py
 +++ b/src/freedreno/common/freedreno_devices.py
-@@ -425,6 +425,7 @@ a6xx_gen4 = GPUProps(
-         instr_cache_size = 96,
-         has_sample_locations = True,
+@@ -414,6 +414,7 @@
+         tess_use_shared = True,
          storage_16bit = True,
 +        storage_8bit = True,
-         lpac_16k_instr_cache = True,
-         lrz_track_quirk = True,
          has_tex_filter_cubic = True,
+         has_separate_chroma_filter = True,
