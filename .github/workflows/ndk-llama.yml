@@ -1,0 +1,63 @@
+name: Build llama.cpp with NDK + Vulkan
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "ndk-build" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: ggml-org/llama.cpp
+          ref: master
+
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r27
+          add-to-path: false
+
+      - name: Install deps
+        run: |
+          sudo apt-get update && sudo apt-get install -y cmake ninja-build
+
+      - name: Configure with NDK
+        run: |
+          mkdir build-ndk && cd build-ndk
+          cmake .. -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE=${{ env.ANDROID_NDK_HOME }}/build/cmake/android.toolchain.cmake \
+            -DANDROID_ABI=arm64-v8a \
+            -DANDROID_PLATFORM=android-31 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DGGML_VULKAN=ON \
+            -DGGML_ARM_NEON=ON \
+            -DGGML_CUDA=OFF \
+            -DGGML_METAL=OFF \
+            -DLLAMA_BUILD_TESTS=OFF \
+            -DLLAMA_BUILD_EXAMPLES=OFF \
+            -DBUILD_SHARED_LIBS=ON
+
+      - name: Build
+        run: |
+          cd build-ndk
+          ninja llama-embedding -j$(nproc)
+
+      - name: Package
+        run: |
+          mkdir -p artifact
+          cp build-ndk/bin/llama-embedding artifact/
+          cp build-ndk/bin/libggml*.so* artifact/ 2>/dev/null || true
+          cp build-ndk/bin/libllama*.so* artifact/ 2>/dev/null || true
+          # NDK-built libc++_shared
+          find ${{ env.ANDROID_NDK_HOME }} -name "libc++_shared.so" -path "*/arm64-v8a/*" -exec cp {} artifact/ \;
+          echo "Files in artifact:"
+          ls -lh artifact/
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: llama-ndk-vulkan-arm64
+          path: artifact/
