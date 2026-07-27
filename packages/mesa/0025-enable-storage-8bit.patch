@@ -6,7 +6,7 @@ from a6xx_gen4, the hardware very likely supports it.
 
 --- a/src/freedreno/common/freedreno_devices.py
 +++ b/src/freedreno/common/freedreno_devices.py
-@@ -414,6 +414,7 @@
+@@ -414,4 +414,5 @@
          tess_use_shared = True,
          storage_16bit = True,
 +        storage_8bit = True,
