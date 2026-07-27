@@ -36,11 +36,11 @@ jobs:
             -DGGML_ARM_NEON=ON \
             -DGGML_CUDA=OFF -DGGML_METAL=OFF \
             -DBUILD_SHARED_LIBS=ON \
-            -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF
+            -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF \
+            -DVulkan_INCLUDE_DIRS=/usr/include
 
       - name: Build
-        run: |
-          cd build-ndk && ninja llama-embedding -j$(nproc)
+        run: cd build-ndk && ninja llama-embedding -j$(nproc)
 
       - name: Package
         run: |
