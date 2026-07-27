@@ -33,11 +33,13 @@ jobs:
             -DANDROID_PLATFORM=android-31 \
             -DCMAKE_BUILD_TYPE=Release \
             -DGGML_VULKAN=ON \
+            -DGGML_VULKAN_DEVICE=0 \
             -DGGML_ARM_NEON=ON \
             -DGGML_CUDA=OFF -DGGML_METAL=OFF \
             -DBUILD_SHARED_LIBS=ON \
             -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF \
-            -DVulkan_INCLUDE_DIRS=/usr/include
+            -DVulkan_INCLUDE_DIRS=/usr/include \
+            -DVulkan_LIBRARIES=/usr/lib/x86_64-linux-gnu/libvulkan.so
 
       - name: Build
         run: cd build-ndk && ninja llama-embedding -j$(nproc)
